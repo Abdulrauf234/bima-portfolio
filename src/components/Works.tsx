@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, X, Sparkles, Smartphone, Monitor } from "lucide-react";
 
@@ -53,14 +53,23 @@ const defaultProjects: Project[] = [
   },
 ];
 
-const stored = typeof window !== "undefined" ? localStorage.getItem("projects") : null;
-const projects: Project[] = stored ? JSON.parse(stored) : defaultProjects;
-
 export default function Works() {
   const [filter, setFilter] = useState<"all" | "web" | "mobile">("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projectsList, setProjectsList] = useState<Project[]>(defaultProjects);
 
-  const filteredProjects = projects.filter(
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("projects") : null;
+    if (stored) {
+      try {
+        setProjectsList(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse projects from localStorage", e);
+      }
+    }
+  }, []);
+
+  const filteredProjects = projectsList.filter(
     (p) => filter === "all" || p.category === filter
   );
 

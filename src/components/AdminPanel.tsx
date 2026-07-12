@@ -104,10 +104,61 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const saveChanges = () => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("projects", JSON.stringify(projects));
-      // Force reload to update active project list on Works section
-      window.location.reload();
+      try {
+        localStorage.setItem("projects", JSON.stringify(projects));
+        // Force reload to update active project list on Works section
+        window.location.reload();
+      } catch (error) {
+        console.error("Error saving projects to localStorage", error);
+        alert(
+          "Failed to save: Storage quota exceeded. The image may be too large. Try uploading a smaller image or pasting a direct image link."
+        );
+      }
     }
+  };
+
+  const compressAndSetImage = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 600;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          try {
+            const compressed = canvas.toDataURL("image/jpeg", 0.6);
+            handleChange(activeTab, "mockupImg", compressed);
+          } catch (e) {
+            console.error("Canvas toDataURL compression failed", e);
+            alert("Failed to compress image. Try a smaller file.");
+          }
+        }
+      };
+      if (typeof event.target?.result === "string") {
+        img.src = event.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const currentProject = projects[activeTab];
@@ -297,13 +348,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onloadend = () => {
-                                if (typeof reader.result === "string") {
-                                  handleChange(activeTab, "mockupImg", reader.result);
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              compressAndSetImage(file);
                             }
                           }}
                           className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:font-semibold file:bg-violet-600/20 file:text-violet-300 hover:file:bg-violet-600/30 file:cursor-pointer cursor-pointer"
