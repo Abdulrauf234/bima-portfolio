@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { X, Plus, Trash2, Save, Laptop, Sparkles } from "lucide-react";
@@ -13,6 +13,7 @@ interface Project {
   year: string;
   color: string;
   accentColor: string;
+  mockupImg?: string;
 }
 
 const DEFAULT_PROJECTS: Project[] = [
@@ -87,6 +88,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       year: String(new Date().getFullYear()),
       color: "from-slate-900 to-indigo-950",
       accentColor: "#818cf8",
+      mockupImg: "",
     };
     setProjects((prev) => [...prev, newProject]);
     setActiveTab(projects.length); // Switch to newly created project
@@ -164,7 +166,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Workspace Form / Editor */}
-        <div className="flex-1 flex flex-col h-full bg-slate-900">
+        <div className="flex-1 flex flex-col min-h-0 bg-slate-900">
           {/* Header section (Visible only on Desktop) */}
           <div className="hidden md:flex items-center justify-between px-6 py-4 border-b border-slate-800/80">
             <h1 className="text-base font-bold text-white flex items-center gap-2">
@@ -271,8 +273,72 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     />
                   </label>
                 </div>
+                
+                <div className="block space-y-2 border-t border-slate-800/40 pt-4">
+                  <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase block">Mockup Image</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                    <div className="space-y-3">
+                      <label className="block space-y-1">
+                        <span className="text-[10px] font-semibold text-slate-500">Image URL</span>
+                        <input
+                          type="text"
+                          placeholder="https://images.unsplash.com/... or base64 data"
+                          value={currentProject.mockupImg || ""}
+                          onChange={(e) => handleChange(activeTab, "mockupImg", e.target.value)}
+                          className="w-full rounded-xl bg-slate-950 border border-slate-850 px-3 py-2 text-xs font-semibold text-white placeholder-slate-650 focus:outline-none focus:border-violet-500 transition-colors"
+                        />
+                      </label>
+                      
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-semibold text-slate-500 block">Upload Image File</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                if (typeof reader.result === "string") {
+                                  handleChange(activeTab, "mockupImg", reader.result);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[11px] file:font-semibold file:bg-violet-600/20 file:text-violet-300 hover:file:bg-violet-600/30 file:cursor-pointer cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Image Preview */}
+                    <div className="flex flex-col items-center justify-center border border-dashed border-slate-850 rounded-2xl p-4 bg-slate-950/20 aspect-[16/10] relative overflow-hidden group">
+                      {currentProject.mockupImg ? (
+                        <>
+                          <img
+                            src={currentProject.mockupImg}
+                            alt="Mockup Preview"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleChange(activeTab, "mockupImg", "")}
+                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-red-400 transition-opacity rounded-lg cursor-pointer"
+                          >
+                            Remove Image
+                          </button>
+                        </>
+                      ) : (
+                        <div className="text-center space-y-1 text-slate-600">
+                          <span className="text-[10px] uppercase font-mono block">No Mockup Image</span>
+                          <span className="text-[9px] block">Using default SVG browser frame</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-                <div className="space-y-4 pt-2">
+                <div className="space-y-4 pt-2 border-t border-slate-800/40">
                   <label className="block space-y-1">
                     <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">Short Description</span>
                     <textarea

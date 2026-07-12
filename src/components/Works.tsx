@@ -14,6 +14,7 @@ interface Project {
   year: string;
   color: string;
   accentColor: string;
+  mockupImg?: string;
 }
 
 const defaultProjects: Project[] = [
@@ -114,7 +115,7 @@ export default function Works() {
                 transition={{ duration: 0.4 }}
                 whileHover={{ y: -6 }}
                 onClick={() => setSelectedProject(project)}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br ${project.color} p-6 shadow-xl cursor-pointer`}
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br ${project.color} p-6 shadow-xl cursor-pointer mx-auto w-full max-w-md md:max-w-none`}
               >
                 {/* Visual Accent */}
                 <div className="absolute top-0 right-0 h-32 w-32 bg-white/5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
@@ -206,25 +207,35 @@ export default function Works() {
 
                 {/* Mockup Presentation Area */}
                 <div
-                  className={`mt-6 rounded-2xl bg-gradient-to-br ${selectedProject.color} py-12 px-6 text-center border border-white/5`}
+                  className={`mt-6 rounded-2xl bg-gradient-to-br ${selectedProject.color} py-12 px-6 flex flex-col items-center justify-center border border-white/5`}
                 >
-                  <span className="text-xs font-mono uppercase tracking-widest text-white/50 block mb-2">
+                  <span className="text-xs font-mono uppercase tracking-widest text-white/50 block mb-4">
                     Mockup Frame
                   </span>
-                  <div className="inline-block rounded-2xl bg-black/40 border border-white/10 p-6 max-w-sm text-left shadow-lg">
-                    <div className="flex items-center gap-1.5 mb-4">
+                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 md:p-6 w-full max-w-sm text-center shadow-lg mx-auto">
+                    <div className="flex items-center justify-center gap-1.5 mb-4">
                       <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
                       <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
                       <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
                     </div>
-                    <div className="h-24 w-64 flex flex-col justify-between">
-                      <div className="h-2 w-24 bg-white/20 rounded-full" />
-                      <div className="h-3 w-40 bg-white/10 rounded-full" />
-                      <div className="flex justify-between items-end">
-                        <div className="h-6 w-6 rounded bg-white/15" />
-                        <div className="h-4 w-12 bg-white/25 rounded-full" />
+                    {selectedProject.mockupImg ? (
+                      <div className="relative rounded-lg overflow-hidden border border-white/5 bg-slate-950/80 aspect-[16/10] flex items-center justify-center">
+                        <img
+                          src={selectedProject.mockupImg}
+                          alt={`${selectedProject.title} Mockup`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
+                    ) : (
+                      <div className="h-24 w-full flex flex-col justify-between items-center text-center">
+                        <div className="h-2 w-24 bg-white/20 rounded-full" />
+                        <div className="h-3 w-40 bg-white/10 rounded-full" />
+                        <div className="flex justify-center items-center gap-4">
+                          <div className="h-6 w-6 rounded bg-white/15" />
+                          <div className="h-4 w-12 bg-white/25 rounded-full" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
