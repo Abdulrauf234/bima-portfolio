@@ -161,21 +161,26 @@ export default function Works() {
       {/* Case Study Modal Overlay */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-md">
-             <motion.div
+          <div
+            onClick={() => setSelectedProject(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 px-4 py-8 backdrop-blur-md overflow-y-auto cursor-pointer"
+          >
+            {/* Persistent Floating Close Button */}
+            <button
+              onClick={() => setSelectedProject(null)}
+              className="fixed top-4 right-4 md:top-8 md:right-8 z-55 flex h-11 w-11 items-center justify-center rounded-full bg-slate-900/90 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-all shadow-2xl backdrop-blur cursor-pointer"
+              title="Close Case Study"
+            >
+              <X size={20} />
+            </button>
+
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 bg-slate-950 p-6 md:p-10 shadow-2xl scrollbar-thin"
+              className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl border border-slate-800 bg-slate-950 p-6 md:p-10 shadow-2xl scrollbar-thin cursor-default"
             >
-              {/* Close Button top corner */}
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white z-10"
-              >
-                <X size={18} />
-              </button>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
                 
                 {/* Left Side: Metadata, Text and Close Action */}
