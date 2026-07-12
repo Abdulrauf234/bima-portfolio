@@ -162,61 +162,79 @@ export default function Works() {
       <AnimatePresence>
         {selectedProject && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-md">
-            <motion.div
+             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-8 shadow-2xl md:p-10"
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 bg-slate-950 p-6 md:p-10 shadow-2xl scrollbar-thin"
             >
-              {/* Close Button */}
+              {/* Close Button top corner */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                className="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white z-10"
               >
                 <X size={18} />
               </button>
 
-              <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Sparkles size={16} style={{ color: selectedProject.accentColor }} />
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: selectedProject.accentColor }}>
-                    Case Study
-                  </span>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                
+                {/* Left Side: Metadata, Text and Close Action */}
+                <div className="flex flex-col justify-between space-y-6">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={16} style={{ color: selectedProject.accentColor }} />
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: selectedProject.accentColor }}>
+                        Case Study
+                      </span>
+                    </div>
 
-                <div className="space-y-1">
-                  <h3 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                    {selectedProject.title}
-                  </h3>
-                  <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-400">
-                    <span>Role: {selectedProject.role}</span>
-                    <span>•</span>
-                    <span>Year: {selectedProject.year}</span>
-                    <span>•</span>
-                    <span className="capitalize">Platform: {selectedProject.category}</span>
+                    <div className="space-y-2">
+                      <h3 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                        {selectedProject.title}
+                      </h3>
+                      <div className="flex flex-wrap gap-3 text-xs font-semibold text-slate-400">
+                        <span>Role: {selectedProject.role}</span>
+                        <span>•</span>
+                        <span>Year: {selectedProject.year}</span>
+                        <span>•</span>
+                        <span className="capitalize">Platform: {selectedProject.category}</span>
+                      </div>
+                    </div>
+
+                    <hr className="border-slate-800" />
+
+                    <div className="space-y-4">
+                      <p className="text-sm leading-relaxed text-slate-300 md:text-base">
+                        {selectedProject.longDesc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                    <button
+                      onClick={() => setSelectedProject(null)}
+                      className="flex items-center gap-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-red-500/30 hover:bg-red-950/20 hover:text-red-400 px-6 py-3 text-xs font-bold text-white transition-all shadow-lg w-full md:w-auto justify-center cursor-pointer"
+                    >
+                      <X size={15} /> Close Case Study
+                    </button>
                   </div>
                 </div>
 
-                <hr className="border-slate-800" />
-
-                <div className="space-y-4">
-                  <p className="text-sm leading-relaxed text-slate-300 md:text-base">
-                    {selectedProject.longDesc}
-                  </p>
-                </div>
-
-                {/* Mockup Presentation Area */}
+                {/* Right Side: Mockup Presentation Area */}
                 <div
-                  className={`mt-6 rounded-2xl bg-gradient-to-br ${selectedProject.color} py-12 px-6 flex flex-col items-center justify-center border border-white/5`}
+                  className={`rounded-3xl bg-gradient-to-br ${selectedProject.color} p-6 md:p-8 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden min-h-[300px] md:min-h-full`}
                 >
-                  <span className="text-xs font-mono uppercase tracking-widest text-white/50 block mb-4">
+                  <div className="absolute top-0 right-0 h-32 w-32 bg-white/5 rounded-bl-full pointer-events-none" />
+                  
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-white/40 block mb-4">
                     Mockup Frame
                   </span>
-                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 md:p-6 w-full max-w-sm text-center shadow-lg mx-auto">
+                  
+                  <div className="rounded-2xl bg-black/40 border border-white/10 p-4 md:p-6 w-full max-w-sm text-center shadow-2xl mx-auto">
                     <div className="flex items-center justify-center gap-1.5 mb-4">
-                      <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                      <div className="h-2 w-2 rounded-full bg-red-500" />
+                      <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                      <div className="h-2 w-2 rounded-full bg-green-500" />
                     </div>
                     {selectedProject.mockupImg ? (
                       <div className="relative rounded-lg overflow-hidden border border-white/5 bg-slate-950/80 aspect-[16/10] flex items-center justify-center">
@@ -239,14 +257,6 @@ export default function Works() {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4">
-                  <button
-                    onClick={() => setSelectedProject(null)}
-                    className="rounded-full bg-slate-900 border border-slate-800 px-6 py-2.5 text-xs font-semibold text-white hover:bg-slate-800"
-                  >
-                    Close Preview
-                  </button>
-                </div>
               </div>
             </motion.div>
           </div>
