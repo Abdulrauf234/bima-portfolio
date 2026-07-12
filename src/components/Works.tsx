@@ -16,7 +16,7 @@ interface Project {
   accentColor: string;
 }
 
-const projects: Project[] = [
+const defaultProjects: Project[] = [
   {
     id: "nova-pay",
     title: "Nova Pay",
@@ -51,6 +51,9 @@ const projects: Project[] = [
     accentColor: "#34d399",
   },
 ];
+
+const stored = typeof window !== "undefined" ? localStorage.getItem("projects") : null;
+const projects: Project[] = stored ? JSON.parse(stored) : defaultProjects;
 
 export default function Works() {
   const [filter, setFilter] = useState<"all" | "web" | "mobile">("all");
