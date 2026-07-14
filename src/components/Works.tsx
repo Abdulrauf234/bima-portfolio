@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, X, Sparkles, Smartphone, Monitor } from "lucide-react";
+import { ArrowUpRight, X, Sparkles, Smartphone, Monitor, ZoomIn, Maximize2 } from "lucide-react";
 import { getProjects, DEFAULT_PROJECTS, Project } from "@/lib/projectsService";
 
 
@@ -11,6 +11,8 @@ export default function Works() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projectsList, setProjectsList] = useState<Project[]>(DEFAULT_PROJECTS);
   const [isLoading, setIsLoading] = useState(true);
+  const [isImageExpanded, setIsImageExpanded] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     setIsLoading(true);
@@ -23,6 +25,11 @@ export default function Works() {
   const filteredProjects = projectsList.filter(
     (p) => filter === "all" || p.category === filter
   );
+
+  const resetPreview = () => {
+    setIsImageExpanded(false);
+    setZoomLevel(1);
+  };
 
   return (
     <section id="work" className="relative w-full bg-slate-900 px-6 py-28 text-white">
@@ -122,12 +129,18 @@ export default function Works() {
       <AnimatePresence>
         {selectedProject && (
           <div
-            onClick={() => setSelectedProject(null)}
+            onClick={() => {
+              setSelectedProject(null);
+              resetPreview();
+            }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 px-4 py-8 backdrop-blur-md overflow-y-auto cursor-pointer"
           >
             {/* Persistent Floating Close Button */}
             <button
-              onClick={() => setSelectedProject(null)}
+              onClick={() => {
+                setSelectedProject(null);
+                resetPreview();
+              }}
               className="fixed top-4 right-4 md:top-8 md:right-8 z-55 flex h-11 w-11 items-center justify-center rounded-full bg-slate-900/90 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-all shadow-2xl backdrop-blur cursor-pointer"
               title="Close Case Study"
             >
@@ -177,7 +190,10 @@ export default function Works() {
 
                   <div className="pt-6">
                     <button
-                      onClick={() => setSelectedProject(null)}
+                      onClick={() => {
+                        setSelectedProject(null);
+                        resetPreview();
+                      }}
                       className="flex items-center gap-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-red-500/30 hover:bg-red-950/20 hover:text-red-400 px-6 py-3 text-xs font-bold text-white transition-all shadow-lg w-full md:w-auto justify-center cursor-pointer"
                     >
                       <X size={15} /> Close Case Study
@@ -191,9 +207,35 @@ export default function Works() {
                 >
                   <div className="absolute top-0 right-0 h-32 w-32 bg-white/5 rounded-bl-full pointer-events-none" />
                   
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-white/40 block mb-4">
-                    Mockup Frame
-                  </span>
+                  <div className="flex items-center justify-between w-full max-w-sm mb-4">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">
+                      Mockup Frame
+                    </span>
+                    {selectedProject.mockupImg && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setZoomLevel((prev) => (prev === 1 ? 1.8 : 1));
+                          }}
+                          className="rounded-full border border-white/10 bg-slate-900/70 p-2 text-slate-200 transition hover:bg-white/10"
+                          title="Toggle zoom"
+                        >
+                          <ZoomIn size={14} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsImageExpanded(true);
+                          }}
+                          className="rounded-full border border-white/10 bg-slate-900/70 p-2 text-slate-200 transition hover:bg-white/10"
+                          title="View full screen"
+                        >
+                          <Maximize2 size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   
                   <div className="rounded-2xl bg-black/40 border border-white/10 p-4 md:p-6 w-full max-w-sm text-center shadow-2xl mx-auto">
                     <div className="flex items-center justify-center gap-1.5 mb-4">
@@ -206,7 +248,8 @@ export default function Works() {
                         <img
                           src={selectedProject.mockupImg}
                           alt={`${selectedProject.title} Mockup`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-300"
+                          style={{ transform: `scale(${zoomLevel})` }}
                         />
                       </div>
                     ) : (
@@ -225,6 +268,39 @@ export default function Works() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isImageExpanded && selectedProject?.mockupImg && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4"
+            onClick={() => resetPreview()}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                resetPreview();
+              }}
+              className="fixed top-4 right-4 z-[61] flex h-11 w-11 items-center justify-center rounded-full bg-slate-900/90 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-all shadow-2xl"
+              title="Close fullscreen preview"
+            >
+              <X size={20} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              src={selectedProject.mockupImg}
+              alt={`${selectedProject.title} Fullscreen Mockup`}
+              className="max-h-[90vh] max-w-full rounded-2xl object-contain shadow-2xl"
+              style={{ transform: `scale(${zoomLevel})` }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

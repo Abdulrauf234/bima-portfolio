@@ -4,11 +4,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle, MessageSquare, Briefcase, Mail } from "lucide-react";
 
-const LinkedinIcon = ({ size = 16 }: { size?: number }) => (
+const InstagramIcon = ({ size = 16 }: { size?: number }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-    <rect x="2" y="9" width="4" height="12"></rect>
-    <circle cx="4" cy="4" r="2"></circle>
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
   </svg>
 );
 
@@ -18,12 +18,17 @@ const WhatsAppIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-const BehanceIcon = ({ size = 16 }: { size?: number }) => (
+const XIcon = ({ size = 16 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
+const ThreadsIcon = ({ size = 16 }: { size?: number }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 13H15" />
-    <path d="M18 8H15" />
-    <path d="M12 9.5a2.5 2.5 0 0 0-2.5-2.5H4v10h5.5A2.5 2.5 0 0 0 12 14.5a2.5 2.5 0 0 0-2.5-2.5" />
-    <path d="M4 12h5.5" />
+    <path d="M14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" />
+    <path d="M14.5 14.5C14.5 14.5 13 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12C16 13.6569 15.3284 15 14 15V15" />
+    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
   </svg>
 );
 
@@ -80,15 +85,15 @@ export default function Contact() {
             {/* Quick contact social buttons */}
             <div className="flex flex-col gap-3 pt-4 items-center lg:items-start">
               <a
-                href="https://linkedin.com"
+                href="https://www.instagram.com/bima.ux?igsh=ZXNlNXlobXc0bDh0&utm_source=qr"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-violet-600 dark:text-slate-300 dark:hover:text-violet-400"
+                className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-pink-600 dark:text-slate-300 dark:hover:text-pink-400"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
-                  <LinkedinIcon size={16} />
+                  <InstagramIcon size={16} />
                 </div>
-                Connect on LinkedIn
+                Connect on Instagram
               </a>
 
               <a
@@ -114,15 +119,27 @@ export default function Contact() {
               </a>
 
               <a
-                href="https://behance.net"
+                href="https://x.com/bimakasimu?s=21"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-fuchsia-600 dark:text-slate-300 dark:hover:text-fuchsia-400"
+                className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
-                  <BehanceIcon size={16} />
+                  <XIcon size={16} />
                 </div>
-                View Behance Portfolio
+                Follow on X
+              </a>
+
+              <a
+                href="https://www.threads.com/@bima.ux?igshid=NTc4MTIwNjQ2YQ=="
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
+                  <ThreadsIcon size={16} />
+                </div>
+                Connect on Threads
               </a>
             </div>
           </div>
