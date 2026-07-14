@@ -3,70 +3,21 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, X, Sparkles, Smartphone, Monitor } from "lucide-react";
+import { getProjects, DEFAULT_PROJECTS, Project } from "@/lib/projectsService";
 
-interface Project {
-  id: string;
-  title: string;
-  category: "mobile" | "web";
-  desc: string;
-  longDesc: string;
-  role: string;
-  year: string;
-  color: string;
-  accentColor: string;
-  mockupImg?: string;
-}
-
-const defaultProjects: Project[] = [
-  {
-    id: "nova-pay",
-    title: "Nova Pay",
-    category: "mobile",
-    desc: "A futuristic financial app that simplifies global transactions with micro-animations and zero-friction flows.",
-    longDesc: "Nova Pay is a next-generation neo-banking app designed to streamline borderless transfers. Through extensive user research, we crafted an interface featuring micro-animations that confirm financial operations, a dark minimalist command center, and one-tap invoice settlements.",
-    role: "Lead Product Designer",
-    year: "2025",
-    color: "from-slate-900 to-violet-950",
-    accentColor: "#a78bfa",
-  },
-  {
-    id: "aura-workspace",
-    title: "Aura Workspace",
-    category: "web",
-    desc: "An AI-powered dashboard offering smooth Kanban workflows and high-fidelity analytical reporting.",
-    longDesc: "Aura is a collaborative B2B tool designed to coordinate cross-functional sprints. The design system features glassmorphism workspace grids, intuitive shortcuts, and rich statistics panels that load seamlessly with zero UI lag.",
-    role: "Lead UI/UX Designer",
-    year: "2026",
-    color: "from-slate-900 to-indigo-950",
-    accentColor: "#818cf8",
-  },
-  {
-    id: "zen-bloom",
-    title: "Zen Bloom",
-    category: "mobile",
-    desc: "A wellness and meditation app focused on calming animations, custom dark modes, and habit tracking.",
-    longDesc: "Zen Bloom uses breathing exercise loops and custom soft-shadow sound player interfaces to cultivate deep tranquility. We combined soft neutral tones with rich color therapy indicators to reward consistent stress-relief routines.",
-    role: "Mobile App UI Designer",
-    year: "2025",
-    color: "from-slate-900 to-emerald-950",
-    accentColor: "#34d399",
-  },
-];
 
 export default function Works() {
   const [filter, setFilter] = useState<"all" | "web" | "mobile">("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [projectsList, setProjectsList] = useState<Project[]>(defaultProjects);
+  const [projectsList, setProjectsList] = useState<Project[]>(DEFAULT_PROJECTS);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("projects") : null;
-    if (stored) {
-      try {
-        setProjectsList(JSON.parse(stored));
-      } catch (e) {
-        console.error("Failed to parse projects from localStorage", e);
-      }
-    }
+    setIsLoading(true);
+    getProjects()
+      .then((data) => setProjectsList(data))
+      .catch(() => setProjectsList(DEFAULT_PROJECTS))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const filteredProjects = projectsList.filter(

@@ -1,72 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Save, Laptop, Sparkles } from "lucide-react";
-
-interface Project {
-  id: string;
-  title: string;
-  category: "mobile" | "web";
-  desc: string;
-  longDesc: string;
-  role: string;
-  year: string;
-  color: string;
-  accentColor: string;
-  mockupImg?: string;
-}
-
-const DEFAULT_PROJECTS: Project[] = [
-  {
-    id: "nova-pay",
-    title: "Nova Pay",
-    category: "mobile",
-    desc: "A futuristic financial app that simplifies global transactions with micro-animations and zero-friction flows.",
-    longDesc: "Nova Pay is a next-generation neo-banking app designed to streamline borderless transfers. Through extensive user research, we crafted an interface featuring micro-animations that confirm financial operations, a dark minimalist command center, and one-tap invoice settlements.",
-    role: "Lead Product Designer",
-    year: "2025",
-    color: "from-slate-900 to-violet-950",
-    accentColor: "#a78bfa",
-  },
-  {
-    id: "aura-workspace",
-    title: "Aura Workspace",
-    category: "web",
-    desc: "An AI-powered dashboard offering smooth Kanban workflows and high-fidelity analytical reporting.",
-    longDesc: "Aura is a collaborative B2B tool designed to coordinate cross-functional sprints. The design system features glassmorphism workspace grids, intuitive shortcuts, and rich statistics panels that load seamlessly with zero UI lag.",
-    role: "Lead UI/UX Designer",
-    year: "2026",
-    color: "from-slate-900 to-indigo-950",
-    accentColor: "#818cf8",
-  },
-  {
-    id: "zen-bloom",
-    title: "Zen Bloom",
-    category: "mobile",
-    desc: "A wellness and meditation app focused on calming animations, custom dark modes, and habit tracking.",
-    longDesc: "Zen Bloom uses breathing exercise loops and custom soft-shadow sound player interfaces to cultivate deep tranquility. We combined soft neutral tones with rich color therapy indicators to reward consistent stress-relief routines.",
-    role: "Mobile App UI Designer",
-    year: "2025",
-    color: "from-slate-900 to-emerald-950",
-    accentColor: "#34d399",
-  },
-];
+import { X, Plus, Trash2, Save, Laptop, Sparkles, Cloud, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { getProjects, saveProjects, DEFAULT_PROJECTS, Project } from "@/lib/projectsService";
 
 export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const showToast = (type: "success" | "error", message: string) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("projects") : null;
-    if (stored) {
-      try {
-        setProjects(JSON.parse(stored));
-      } catch {
+    setIsLoading(true);
+    getProjects()
+      .then((data) => setProjects(data))
+      .catch(() => {
         setProjects(DEFAULT_PROJECTS);
-      }
-    } else {
-      setProjects(DEFAULT_PROJECTS);
-    }
+        showToast("error", "Could not reach cloud. Check your Firebase config.");
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   const handleChange = (index: number, field: keyof Project, value: string) => {
@@ -102,18 +60,18 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const saveChanges = () => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("projects", JSON.stringify(projects));
-        // Force reload to update active project list on Works section
-        window.location.reload();
-      } catch (error) {
-        console.error("Error saving projects to localStorage", error);
-        alert(
-          "Failed to save: Storage quota exceeded. The image may be too large. Try uploading a smaller image or pasting a direct image link."
-        );
-      }
+  const saveChanges = async () => {
+    setIsSaving(true);
+    try {
+      await saveProjects(projects);
+      showToast("success", "Projects saved to cloud! Changes are now live everywhere.");
+      // Give the toast a moment to show before reloading
+      setTimeout(() => window.location.reload(), 1800);
+    } catch (error) {
+      console.error("Error saving projects to Firestore", error);
+      showToast("error", "Save failed. The image may be too large — try a URL instead of an upload.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -165,6 +123,23 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-lg p-3 md:p-6">
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-2xl border text-xs font-semibold transition-all animate-in fade-in slide-in-from-top-4 duration-300 ${
+            toast.type === "success"
+              ? "bg-emerald-950/90 border-emerald-700/60 text-emerald-300"
+              : "bg-red-950/90 border-red-700/60 text-red-300"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 size={15} className="shrink-0" />
+          ) : (
+            <AlertCircle size={15} className="shrink-0" />
+          )}
+          {toast.message}
+        </div>
+      )}
       <div className="relative flex flex-col md:flex-row w-full max-w-5xl h-[92vh] md:h-[80vh] overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl">
         
         {/* Sidebar: Navigation List */}
@@ -223,6 +198,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
             <h1 className="text-base font-bold text-white flex items-center gap-2">
               <Laptop size={16} className="text-violet-400" />
               Editing: <span className="text-violet-300 font-semibold">{currentProject?.title || "Project Details"}</span>
+              <span className="ml-2 flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 rounded-full px-2 py-0.5">
+                <Cloud size={10} /> Cloud Sync
+              </span>
             </h1>
             <button
               onClick={onClose}
@@ -234,7 +212,12 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
           {/* Form workspace body */}
           <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-            {currentProject ? (
+            {isLoading ? (
+              <div className="h-full flex flex-col items-center justify-center gap-3 text-slate-500">
+                <Loader2 size={24} className="animate-spin text-violet-400" />
+                <span className="text-xs font-semibold">Loading from cloud...</span>
+              </div>
+            ) : currentProject ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-800/40">
                   <h3 className="text-xs font-bold text-slate-400 tracking-wider uppercase">
@@ -424,9 +407,14 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
             </button>
             <button
               onClick={saveChanges}
-              className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 px-5 py-2.5 text-xs font-bold text-white transition-colors shadow-lg shadow-violet-600/10"
+              disabled={isSaving || isLoading}
+              className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-60 disabled:cursor-not-allowed px-5 py-2.5 text-xs font-bold text-white transition-colors shadow-lg shadow-violet-600/10"
             >
-              <Save size={14} /> Save &amp; Publish
+              {isSaving ? (
+                <><Loader2 size={14} className="animate-spin" /> Saving to Cloud...</>
+              ) : (
+                <><Save size={14} /> Save &amp; Publish</>
+              )}
             </button>
           </div>
         </div>
