@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Settings } from "lucide-react";
-import AdminPanel from "./AdminPanel";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { name: "Work", href: "#work" },
@@ -15,7 +14,6 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("work");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,7 +60,7 @@ export default function Navbar() {
             scrolled ? "shadow-lg shadow-black/5" : ""
           } w-full max-w-xl`}
         >
-          {/* Brand/Logo & Admin Button for Desktop */}
+          {/* Brand/Logo */}
           <div className="flex items-center gap-2">
             <a
               href="#hero"
@@ -71,15 +69,6 @@ export default function Navbar() {
             >
               BIMA.
             </a>
-
-            {/* Admin Button — visible on desktop next to brand name */}
-            <button
-              onClick={() => setAdminOpen(true)}
-              className="hidden md:inline-flex items-center justify-center rounded-full p-1 text-slate-600 hover:text-white hover:bg-white/10 transition-colors"
-              aria-label="Open admin panel"
-            >
-              <Settings size={15} />
-            </button>
           </div>
 
           {/* Desktop Nav Items */}
@@ -107,26 +96,14 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Right side controls for Mobile / Tablet */}
-          <div className="flex items-center gap-2 md:hidden">
-            {/* Admin Button — visible on mobile/tablet next to the menu icon */}
-            <button
-              onClick={() => setAdminOpen(true)}
-              className="inline-flex items-center justify-center rounded-full p-1.5 text-slate-600 hover:text-white hover:bg-white/10 transition-colors"
-              aria-label="Open admin panel"
-            >
-              <Settings size={15} />
-            </button>
-
-            {/* Mobile Menu Trigger */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex items-center justify-center rounded-full p-1.5 text-slate-400 hover:text-white"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
+          {/* Mobile Menu Trigger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex md:hidden items-center justify-center rounded-full p-1.5 text-slate-400 hover:text-white"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </motion.nav>
       </header>
 
@@ -158,8 +135,7 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Admin Panel Modal */}
-      {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+
     </>
   );
 }

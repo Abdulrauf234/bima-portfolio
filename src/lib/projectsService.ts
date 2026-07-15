@@ -1,12 +1,3 @@
-import { db } from "./firebase";
-import {
-  collection,
-  doc,
-  getDocs,
-  writeBatch,
-  deleteDoc,
-} from "firebase/firestore";
-
 export interface Project {
   id: string;
   title: string;
@@ -32,7 +23,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     year: "2026",
     color: "from-slate-900 to-sky-950",
     accentColor: "#38bdf8",
-    mockupImg: "/mockups/WhatsApp Image 2026-07-14 at 2.55.23 PM.jpeg",
+    mockupImg: "/mockups/ChatGPT Image Jul 15, 2026, 10_35_41 PM.png",
   },
   {
     id: "dentora-care",
@@ -62,42 +53,9 @@ export const DEFAULT_PROJECTS: Project[] = [
   },
 ];
 
-const COLLECTION = "projects";
-
 /**
- * Fetch all projects from Firestore.
- * Falls back to DEFAULT_PROJECTS if the collection is empty (first run).
+ * Fetch all projects - returns static DEFAULT_PROJECTS
  */
 export async function getProjects(): Promise<Project[]> {
-  const snapshot = await getDocs(collection(db, COLLECTION));
-  if (snapshot.empty) {
-    return DEFAULT_PROJECTS;
-  }
-  const projects: Project[] = [];
-  snapshot.forEach((docSnap) => {
-    projects.push(docSnap.data() as Project);
-  });
-  // Sort by a stable key so order is consistent
-  projects.sort((a, b) => a.id.localeCompare(b.id));
-  return projects;
-}
-
-/**
- * Overwrite the entire projects collection in Firestore.
- * Uses a batch write for atomicity.
- */
-export async function saveProjects(projects: Project[]): Promise<void> {
-  // 1. Delete all existing docs
-  const existing = await getDocs(collection(db, COLLECTION));
-  const deleteBatch = writeBatch(db);
-  existing.forEach((docSnap) => deleteBatch.delete(docSnap.ref));
-  await deleteBatch.commit();
-
-  // 2. Write all new projects
-  const writeBatchOp = writeBatch(db);
-  for (const project of projects) {
-    const ref = doc(db, COLLECTION, project.id);
-    writeBatchOp.set(ref, project);
-  }
-  await writeBatchOp.commit();
+  return DEFAULT_PROJECTS;
 }

@@ -108,6 +108,17 @@ export default function Works() {
                       {project.desc}
                     </p>
                   </div>
+
+                  {/* Mockup Thumbnail */}
+                  {project.mockupImg && (
+                    <div className="rounded-xl overflow-hidden border border-white/10 bg-slate-950/50 aspect-video flex items-center justify-center shadow-lg">
+                      <img
+                        src={project.mockupImg}
+                        alt={`${project.title} Design`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Footer Link Button */}
