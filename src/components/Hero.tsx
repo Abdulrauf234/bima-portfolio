@@ -75,7 +75,7 @@ export default function Hero() {
           variants={itemVariants}
           className="max-w-xl text-sm leading-relaxed text-slate-500 sm:text-base md:text-lg"
         >
-          I specialize on designing thoughtful product interfaces for ambitions teams. Turning complex ideas into refined useful software.
+          I specialize on designing thoughtful product interfaces for ambitious teams. Turning complex ideas into refined useful software.
         </motion.p>
 
         {/* Call to Actions */}
