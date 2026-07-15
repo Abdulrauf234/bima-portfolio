@@ -11,6 +11,9 @@ export interface Project {
   mockupImg?: string;
 }
 
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "./firebase";
+
 export const DEFAULT_PROJECTS: Project[] = [
   {
     id: "spark-pay",
@@ -54,8 +57,23 @@ export const DEFAULT_PROJECTS: Project[] = [
 ];
 
 /**
- * Fetch all projects - returns static DEFAULT_PROJECTS
+ * Fetch all projects from Firestore or fall back to static defaults.
  */
 export async function getProjects(): Promise<Project[]> {
-  return DEFAULT_PROJECTS;
+  try {
+    const snapshot = await getDoc(doc(db, "portfolio", "projects"));
+    if (!snapshot.exists()) {
+      return DEFAULT_PROJECTS;
+    }
+
+    const data = snapshot.data();
+    return Array.isArray(data?.projects) ? data.projects : DEFAULT_PROJECTS;
+  } catch (error) {
+    console.error("Error fetching projects from Firestore", error);
+    return DEFAULT_PROJECTS;
+  }
+}
+
+export async function saveProjects(projects: Project[]): Promise<void> {
+  await setDoc(doc(db, "portfolio", "projects"), { projects }, { merge: true });
 }
